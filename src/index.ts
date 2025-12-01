@@ -1,46 +1,28 @@
-import {from, reduce, scan} from "rxjs";
-import {map} from "rxjs/operators";
+import {fromEvent, mapTo, pipe, pluck, range} from 'rxjs'
+import { map } from 'rxjs/operators'
 
-const numeros = [1, 2, 3, 4, 5];
-
-const totalAcumulaador =  (acc , cur) => acc + cur;
-//reduce
-from(numeros)
-    .pipe(
-        reduce(totalAcumulaador, 0)
-    )
-    .subscribe( console.log );
+// range(1,5)
+//     .pipe(
+//         map<number, string>(x => (x * 2).toString())
+//     )
+//     .subscribe(console.log);
 
 
-//scan
-from(numeros)
-    .pipe(
-        scan(totalAcumulaador, 0)
-    )
-    .subscribe( console.log );
+const keyUp$ = fromEvent<KeyboardEvent>(document, 'keydown')
 
-//redux
-interface Usuario {
-    id?: string;
-    autenticado?: boolean;
-    token?: string;
-    edad?: number;
-}
+const keyUp2$ = keyUp$.pipe(
+    map(event => event.code)
+)
 
-const user: Usuario[] = [
-    { id: 'IronMan', autenticado: false, token: null },
-    { id: 'IronMan', autenticado: true, token: 'ABC' },
-    { id: 'IronMan', autenticado: true, token: 'ABC123' },
-];
+// const keyPluck$ = keyUp$.pipe(
+//     pluck('target','baseURI')
+//
 
-const state$ = from(user).pipe(
-    scan<Usuario, Usuario>((acc, cur) => {
-        return { ...acc, ...cur };
-    }, { edad: 33 } as Usuario)
-);
+const keyMapTo$ = keyUp$.pipe(
+    mapTo(`Tecla presionada`)
+)
 
-const id$ = state$.pipe(
-    map(state => state),
-);
 
-id$.subscribe( console.log );
+
+// keyUp2$.subscribe(val => console.log('map', val));
+keyMapTo$.subscribe(val => console.log('mapTo', val));
